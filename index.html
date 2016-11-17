@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html ng-app="quizApp">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes</title>
+    <link rel="icon" type="image/png" href="https://www.ontario.ca/img/favicon.png">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="./css/main.css" />
+    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.1/jquery.validate.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.6/jquery.validate.unobtrusive.js"></script>
+    <script src="./js/quizzes.js"></script>
+    <script src="./js/main.js"></script>
+</head>
+<body>
+    <div class="container pagewidth">
+        <!-- header -->
+        <div class="row">
+            <div class="col-md-12 header headercolor">
+                <a href="http://www.ontario.ca/government/services" target="_blank" title="Select this link to go to ServiceOntario.ca">
+                    <img alt="ServiceOntario logo" src="./imgs/logo.png" />
+                </a>
+            </div>
+            <div class="col-md-12 text-right subherder subheadercolor">
+                <span style="border-right: 1px solid #000000; margin-right: 16px; padding-right: 16px;">
+                    <span style="font-style: italic" class="hidden-xs">You are logged in as</span> <strong>chris@acme.com</strong>
+                </span>
+                <span>
+                    <a href="#Logout" title="Select this link to logout of ServiceOntario.ca">Log Out</a>
+                </span>
+            </div>
+        </div>
+        <!-- header -->
+        <!-- body -->
+        <!-- navigation -->
+        <div class="row">
+            <div class="col-md-12 menu hidden-xs" style="font-size: 18px;">
+                <a href="#" title="Business services">
+                    Home
+                </a>&nbsp;>&nbsp;
+                Questionnaire
+            </div>
+            <div class="col-md-12 menu visible-xs" style="font-size: 21px;">
+                <a href="#back" style="text-decoration:underline;" title="Select this link to go back">&lt; Back</a>
+            </div>
+            <div class="col-md-12 titleinfo">
+                Starting a restaurant questionnaire
+            </div>
+        </div>
+        <div class="row content">
+            <div class="col-md-8" style="padding-left:25px;padding-right:25px;">
+                <div class="row" ng-controller="quizCtrl">
+                    <!-- steps -->
+                    <div class="col-md-12 step" id="quizStep">
+                        <div class="row" style="padding-bottom:20px;">
+                            <div class="col-md-6 text-left" style="color:#59595B;font-size:18px;">
+                                Question {{currentQuiz+1}} of {{quizzes.length}}
+                            </div>
+                            <div class="col-md-6 text-right hidden-xs hidden-sm" style="font-size:18px;padding-right:50px;">
+                                <span id="previouslink0"><a href="" style="text-decoration:underline;" ng-click="minusQuiz(currentQuiz)">&lt;Previous</a>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                <a href="" style="text-decoration:underline;" ng-click="addQuiz(currentQuiz)">Next&gt;</a>
+                            </div>
+                        </div>
+                        <div id="progressbar">
+                            <div class="progresslabel"></div>
+                        </div>
+                    </div>
+                    <!-- content -->
+                    <div class="col-md-12" style="color:#58595B;padding-top:30px;" id="quizSection">
+                        <form>
+                            <div>
+                                <div id="quiztitle" style="font-size:28px;">
+                                    {{currentQuiz+1}}. {{quizzes[currentQuiz].question}}<a href="" class="help" data-rel="dialog" data-transition="pop" title="Help with {{quizzes[currentQuiz].question}}"></a>
+                                </div>
+                                <span style="padding-left:30px">&nbsp;</span>
+                                <label class="form-check-label" ng-repeat="answer in quizzes[currentQuiz].answers" style="padding-right:20px;">
+                                    <input type="radio" class="form-check-input" name="rdoAnswers" id="rdoAnswers{{$index}}" value="{{$index}}" ng-click="addUserAnswer($index)" ng-model="quizzes[currentQuiz].userQuiz" ng-value="{{$index}}" data-val="true" data-val-required="Please choose one of the answers." />
+                                    <span style="font-size:20px;color:#5A5A5C;font-weight:400;">{{answer.answer}}</span>
+                                </label>
+                                <span class="field-validation-valid text-danger" data-valmsg-for="rdoAnswers" data-valmsg-replace="true"></span>
+                                <div class="dont-break-out" style="background-color:#F6F6F6;font-size:17px;margin:20px 0 0 30px;padding:10px 10px 10px 10px;display:none;" id="answerexplanation" ng-repeat="answer in quizzes[currentQuiz].answers" ng-if="answer.explanation" ng-bind-html="answer.explanation" ng-show="quizzes[currentQuiz].userQuiz == '{{$index}}'">
+                                </div>
+                            </div>
+                            <div class="row" style="padding-top:40px;" id="buttons">
+                                <div class="col-md-4 text-left" style="padding-left:40px;">
+                                    <!--<button id="btnPrevious" class="btn" style="width:200px;" type="button" value="" ng-click="minusQuiz(currentQuiz)">Previous Question</button>-->
+                                    <span id="previouslink1"><a href="" style="text-decoration:underline;font-size:18px;padding-right:50px;" ng-click="minusQuiz(currentQuiz)" id="previousalink">&lt;Previous</a></span>
+                                    <span id="previousemptylink1" style="font-size: 18px;padding-top:7px;"><a href="#" class="hidden-xs hidden-sm" style="color:#7c2128">Cancel</a></span>
+                                </div>
+                                <div class="col-md-4 hidden-xs hidden-sm text-center" style="font-size: 18px;padding-top:7px;">
+                                    <a href="#" class="hidden-xs hidden-sm" style="color:#7c2128" id="calcellink">Cancel</a>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <button id="btnNext" class="btn" type="button" value="" ng-click="addQuiz(currentQuiz)">Next Question</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="col-md-12" style="color:#58595B;display:none;" id="summarySection">
+                        <div class="row">
+                            <div class="col-md-12" style="color:#58595B;font-size:28px;">
+                                Thank you for completing the questionnaire!
+                            </div>
+                            <div class="col-md-12" style="color:#909092;font-size:20px;padding-top:20px;">
+                                Here is your summary and helpful links to help you in your progress of starting your restaurant. You can go back and make changes by simply clicking on your answer to edit.
+                            </div>
+                            <div class="col-md-12" ng-repeat="quiz in quizzes">
+                                <hr />
+                                <p style="color:#909092;font-size:20px;">{{$index + 1}}. {{quiz.question}}&nbsp;&nbsp;&nbsp;&nbsp;<a href="" style="text-decoration:underline;" ng-click="gotoQuiz(quiz.userAnswer, $index)">{{quiz.answers[quiz.userAnswer].answer}}</a>&nbsp;&nbsp;<a href="" class="help" data-rel="dialog" data-transition="pop" title="Help with {{quiz.question}}"></a></p>
+                                <div class="dont-break-out" style="background-color:#F6F6F6;font-size:17px;margin:20px 0 0 30px;padding:20px 10px 20px 10px;" ng-if="quiz.answers[quiz.userAnswer].explanation" ng-bind-html="quiz.answers[quiz.userAnswer].explanation">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="font-size:18px;padding-top:18px;">
+                            <div class="col-md-6 text-left">
+                                <a href="" style="text-decoration:underline" ng-click="gotoQuiz(quizzes[0].userAnswer, 0)">Start over</a>
+                            </div>
+                            <div class="col-md-6 text-right hidden-xs hidden-sm">
+                                <a href="#" style="text-decoration:underline">Save this page</a> | <a href="javascript:window.print();" style="text-decoration:underline">Print page</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 hidden-xs hidden-sm">
+                <div class="row">
+                    <div class="col-md-12 text-right hidden-xs hidden-sm" style="font-size:18px;padding-bottom:20px;display:none;" id="summarySection1">
+                        <a href="#" style="text-decoration:underline">Save this page</a> | <a href="javascript:window.print();" style="text-decoration:underline">Print page</a>
+                    </div>
+                    <div class="col-md-12">
+                        <div style="display:inline-block;float:left;width:20%;">
+                            <img src="./imgs/icon1.jpg" />
+                        </div>
+                        <div style="display:inline-block;width:80%;vertical-align:top;">
+                            <span style="color:#58595B;font-size:20px;"><strong>Need advice on starting a Restaurant</strong></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="padding-top:10px;">
+                        <span style="color:#58595B;font-size:16px;">Contact our new business advisors for help with a business plan, financing and other aspects of starting a restaurant.</span>
+                    </div>
+                    <div class="col-md-12" style="padding-top:10px;">
+                        <a href="#" style="color:#013358;font-size:16px;text-decoration: underline;">Contact Us</a>
+                    </div>
+                    <div class="col-md-12" style="padding-top:20px;">
+                        <div style="display:inline-block;float:left;width:20%;">
+                            <img src="./imgs/icon2.jpg" />
+                        </div>
+                        <div style="display:inline-block;width:80%;vertical-align:top;">
+                            <span style="color:#58595B;font-size:20px;"><strong>Need application assistance now?</strong></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="padding-top:10px;">
+                        <span style="color:#58595B;font-size:16px;">Advisors are available during business hours (Monday to Friday 9 am to 5 pm) to assist you with license and permit applications</span>
+                    </div>
+                    <div class="col-md-12" style="padding-top:10px;">
+                        <a href="#" style="color:#853D41;font-size:16px;text-decoration: underline;">Chat Now</a><span style="font-size:16px;"> or call 416-555-1212</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- body -->
+        <!-- footer -->
+        <div class="row footer" style="padding-top:16px;">
+            <div class="col-md-4 text-left">
+                <a href="http://www.ontario.ca/government/privacy-statement" target="_blank" title="Select this link to read the privacy statement (opens in a new window)">
+                    Privacy
+                </a>
+            </div>
+            <div class="col-md-4 text-center">
+                <a href="https://www.ontario.ca/government/accessibility" target="_blank" title="Select this link to read about accessibility (opens in a new window)">
+                    Accessibility
+                </a>
+            </div>
+            <div class="col-md-4 text-right">
+                <a href="https://www.ontario.ca/contact-us" target="_blank" title="Select this link to obtain contact information (opens in a new window)">
+                    Contact us
+                </a>
+            </div>
+        </div>
+        <div class="row footer" style="padding-bottom:16px;">
+            <div class="col-md-6 text-left">
+                <a href="https://www.ontario.ca/government/search-results?type=faq&amp;internal_tags=SO_FAQ_vehicleUVIP,SO_FAQ_vehiclePLP,SO_FAQ_vehicleLPS,SO_FAQ_driverlicence,SO_FAQ_records" target="_blank" title="Select this link to view Frequently Asked Questions (opens in a new window)">
+                    FAQ
+                </a>
+            </div>
+            <div class="col-md-6 text-right">
+                <a href="https://www.ontario.ca/government/copyright-information-c-queens-printer-ontario" target="_blank" title="Select this link to read about copyright information: © Queen's Printer for Ontario (opens in a new window)">
+                    © Queen's Printer for Ontario 2014-15
+                </a>
+            </div>
+        </div>
+        <!-- footer -->
+    </div>
+    <div id="helpdialog" style="display:none;">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </div>
+</body>
+</html>
